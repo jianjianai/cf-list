@@ -1,35 +1,41 @@
 @import './base.css';
 
 #app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  font-weight: normal;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    min-height: 100vh;
 }
 
-a,
-.green {
-  text-decoration: none;
-  color: hsla(160, 100%, 37%, 1);
-  transition: 0.4s;
-  padding: 3px;
+:root {
+    /**图标颜色*/
+    --logo-color: #00b3ff;
+
+    /**主题颜色的定义*/
+    --t-color-1: #00b2ff;
+
+    /** 字体颜色的一些定义 */
+    --f-color-0: rgba(0, 0, 0, 1);
+    --f-color-1: rgba(0, 0, 0, 0.6);
+    --f-color-2: rgba(0, 0, 0, 0.3);
+
+    /** 布局主要颜色 */
+    --page-bgc: #f7f8fa;
+
+    /*如果需要hover可点击提示颜色*/
+    --main-hover-bg: rgba(132, 133, 141, 0.18);
+    /*如果需要框的颜色*/
+    --main-border-c: #e1e4e8;
+
+    /**提示功能颜色*/
+    --tip-color-error: #ca1414;
+    --tip-color-success: #4c9c4c;
+    --tip-color-warning: #f0ad4e;
+    --tip-color-info: #5bc0de;
 }
 
-@media (hover: hover) {
-  a:hover {
-    background-color: hsla(160, 100%, 37%, 0.2);
-  }
-}
-
-@media (min-width: 1024px) {
-  body {
-    display: flex;
-    place-items: center;
-  }
-
-  #app {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    padding: 0 2rem;
-  }
+/**---------------文件列表相关 Folder.vue--------------------*/
+:root {
+    --file-icon-c: var(--t-color-1);
+    --folder-icon-c: var(--t-color-1);
 }

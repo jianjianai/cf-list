@@ -1,0 +1,10 @@
+/**---------------通知相关 Notification.vue--------------------*/
+:root{
+    /** 通知的颜色 */
+    --notification-bgc: var(--mian-box-bgc);
+    --notification-shadow: var(--mian-box-shadow);
+    --notification-bg-close-h: var(--main-hover-bg);
+    
+    --notification-color-success: var(--tip-color-success);
+    --notification-color-error: var(--tip-color-error);
+}

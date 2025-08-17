@@ -1,13 +1,53 @@
+export interface File {
+    type: "file";
+    /** 文件名 */
+    name: string;
+    /** 文件大小 */
+    size?: number;
+    /** 文件修改时间 */
+    lastModified?: number;
+    /** 文件下载信息,如果无需二次请求可以得到下载信息可以加上当需要下载时就无需调用downloadInfo获取了 */
+    downloadInfo?: FileDownloadInfo;
+}
+export interface Folder {
+    type: "folder";
+    /** 文件夹名 */
+    name: string;
+    /** 文件夹大小 */
+    size?: number;
+    /** 文件修改时间 */
+    lastModified?: number;
+}
+export type FileDownloadInfo = FileDownloadInfoDirect | FileDownloadInfoProxy;
+export interface FileDownloadInfoDirect {
+    type: "direct";
+    /** 文件下载链接 */
+    url: string;
+}
+export interface FileDownloadInfoProxy {
+    /** 代理下载将加密下载链接和请求头 */
+    type: "proxy";
+    /** 文件下载链接 */
+    url: string;
+    /** 下载所需请求头 */
+    headers?: `${string}: ${string}`[];
+}
+
+
 export interface Drive {
     /** 
      * 返回文件列表 
+     * @param path 要查的路径
+     * @return 如果是一个文件夹，则返回文件夹下的文件和子文件夹列表;如果是一个文件，则返回文件信息;如果文件不存在则返回 undefined.
      * */
-    list(path: string): Promise<string[]>;
+    view(path: string): Promise<(File | Folder)[] | File | undefined>;
 
     /** 
      * 返回文件下载链接
+     * @param path 要查的路径
+     * @return 返回文件下载链接,如果文件不存在则返回 undefined
      * */
-    downloadUrl(path: string): Promise<string>;
+    downloadInfo(path: string): Promise<FileDownloadInfo | undefined>;
 }
 export type DriveManager = ReturnType<typeof createDriveManager>;
 export function createDriveManager() {
@@ -83,7 +123,7 @@ export function createDriveManager() {
          * @param path 要查的路径
          * @return 返回文件夹列表 例如：挂载了3个驱动 "/" "/a" "/c/d" path="/" 则返回 ["a", "c"] , path="/c" 则返回 ["d"]   
          */
-        retrieveFolder(path: string):string[]{
+        retrieveFolder(path: string): string[] {
             const parts = path.split("/").filter(Boolean); // 分割路径并过滤空字符串
             let current: DriveTree | undefined = driveTree;
             for (const part of parts) {

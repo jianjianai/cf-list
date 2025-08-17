@@ -1,0 +1,14 @@
+/**---------------按钮相关 FButtonLink.vue--------------------*/
+:root{
+    /** 按钮的颜色 */
+    --a-button-bg: #e2f4ff;
+    --a-button-bg-h: #c5e2f3;
+    --a-button-c: #0092ff;
+    --a-button-bg-hover:var(--main-hover-bg)
+}
+.button-color-grep1{
+    /*按钮主题颜色2*/
+    --a-button-bg: #eee9ff;
+    --a-button-bg-h: #e5daff;
+    --a-button-c: #ca6cff;
+}

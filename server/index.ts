@@ -1,11 +1,8 @@
-import { setUp } from "../cf-flist-config";
 import { createDriveManager } from "./service";
 
 export type SetUpConfig = {
 
 }
-const setUpConfig = setUp();
-
 
 export default {
 	fetch(request) {
