@@ -1,39 +1,17 @@
-import { createDriveManager } from "./service";
+import { createServer, Server } from "./server";
+import { executeController } from "./service/controllerManager";
+import './controllers/index';
+import './drives/index';
+import { createGithubRepositorieDrive } from "./drives/github-repositorie";
 
-export type SetUpConfig = {
-
-}
+let server: Server;
 
 export default {
-	fetch(request) {
-		const url = new URL(request.url);
-		if (url.pathname.startsWith("/api/")) {
-
-			const test = createDriveManager();
-
-			test.mount("/",{root:"root"});
-			test.mount("/a",{root:"a"});
-			test.mount("/b/c",{root:"b"});
-			test.mount("/b/c/d/d",{root:"d"});
-			test.mount("/b/r/d/d",{root:"e"});
-
-			console.log(test.retrieveDrive("/c/d/e"),"/c/d/e");
-			console.log(test.retrieveDrive("/"),"/");
-			console.log(test.retrieveDrive("/a/b/c"),"/b/c");
-			console.log(test.retrieveDrive("/a"),"/");
-			console.log(test.retrieveDrive("/b"),"/b");
-			console.log(test.retrieveDrive("/b/c/d"),"/d");
-			console.log(test.retrieveDrive("/b/c"),"/");
-			console.log(test.retrieveDrive("/b/c/d/d/e/f/g"),"/e/f/g");
-
-			console.log(test.retrieveFolder("/"),1);
-			console.log(test.retrieveFolder("/b"),1);
-			console.log(test.retrieveFolder("/b/c"),1);
-
-			return Response.json({
-				name: "Cloudflare",
-			});
+	fetch(request, env, ctx) {
+		if (!server) {
+			const rootDrive = createGithubRepositorieDrive("jianjianai","Flist-Files-test","main");
+			server = createServer(rootDrive);
 		}
-		return new Response(null, { status: 404 });
+		return executeController(request, [], server);
 	},
 } satisfies ExportedHandler<Env>;

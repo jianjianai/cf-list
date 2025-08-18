@@ -1,0 +1,4 @@
+:root{
+    --info-t-color: var(--t-color-1); /* 图标颜色 */
+    --info-f-color: var(--f-color-2); /* 信息字体颜色 */
+}

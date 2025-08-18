@@ -8,6 +8,8 @@ export interface File {
     lastModified?: number;
     /** 文件下载信息,如果无需二次请求可以得到下载信息可以加上当需要下载时就无需调用downloadInfo获取了 */
     downloadInfo?: FileDownloadInfo;
+    /** 文件预览信息,如果无需二次请求可以得到预览信息可以加上当需要预览时就无需调用previewInfo获取了 */
+    previewInfo?: FilePreviewInfo;
 }
 export interface Folder {
     type: "folder";
@@ -18,7 +20,9 @@ export interface Folder {
     /** 文件修改时间 */
     lastModified?: number;
 }
+export type FileList = (File | Folder)[];
 export type FileDownloadInfo = FileDownloadInfoDirect | FileDownloadInfoProxy;
+export type FilePreviewInfo = FileDownloadInfo;
 export interface FileDownloadInfoDirect {
     type: "direct";
     /** 文件下载链接 */
@@ -34,20 +38,29 @@ export interface FileDownloadInfoProxy {
 }
 
 
+
+
 export interface Drive {
     /** 
      * 返回文件列表 
      * @param path 要查的路径
      * @return 如果是一个文件夹，则返回文件夹下的文件和子文件夹列表;如果是一个文件，则返回文件信息;如果文件不存在则返回 undefined.
      * */
-    view(path: string): Promise<(File | Folder)[] | File | undefined>;
+    view(path: string): Promise<FileList | File | undefined>;
 
     /** 
-     * 返回文件下载链接
+     * 返回文件下载信息
      * @param path 要查的路径
      * @return 返回文件下载链接,如果文件不存在则返回 undefined
      * */
     downloadInfo(path: string): Promise<FileDownloadInfo | undefined>;
+
+    /** 
+     * 返回文件预览信息
+     * @param path 要查的路径
+     * @return 返回文件下载链接,如果文件不存在则返回 undefined
+     * */
+    previewInfo(path: string): Promise<FilePreviewInfo | undefined>;
 }
 export type DriveManager = ReturnType<typeof createDriveManager>;
 export function createDriveManager() {

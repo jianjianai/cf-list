@@ -34,7 +34,7 @@
     --tip-color-info: #5bc0de;
 }
 
-/**---------------文件列表相关 Folder.vue--------------------*/
+/**---------------文件列表相关 FileTypeIcon.vue--------------------*/
 :root {
     --file-icon-c: var(--t-color-1);
     --folder-icon-c: var(--t-color-1);

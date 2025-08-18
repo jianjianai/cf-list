@@ -1,4 +1,4 @@
-export interface File {
+export interface APIFile {
     type: "file";
     /** 文件名 */
     name: string;
@@ -6,11 +6,13 @@ export interface File {
     size?: number;
     /** 文件修改时间 */
     lastModified?: number;
-    /** 文件下载 */
-    downloadUrl?: FileDownloadInfo;
+    /** 文件下载信息,如果没有则需要获取 */
+    downloadInfo?: APIFileDownloadInfo;
+    /** 文件预览信息,如果没有则需要获取 */
+    previewInfo?: APIFilePreviewInfo;
 }
 
-export interface Folder {
+export interface APIFolder {
     type: "folder";
     /** 文件夹名 */
     name: string;
@@ -20,12 +22,14 @@ export interface Folder {
     lastModified?: number;
 }
 
-export interface FileDownloadInfoBase{
-    type: string;
-}
-export type FileDownloadInfo = FileDownloadInfoURL;
-export interface FileDownloadInfoURL extends FileDownloadInfoBase {
+export type APIFileDownloadInfo = APIFileDownloadInfoURL;
+export type APIFilePreviewInfo = APIFileDownloadInfo;
+export type APIFileList = (APIFile | APIFolder)[];
+
+export interface APIFileDownloadInfoURL{
     type: "url";
     /** 文件下载链接 */
     url: string;
 }
+
+export type previewType = "download";

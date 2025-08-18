@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
-import type { File, Folder } from '@ftypes/api';
+import type { APIFile, APIFileList, APIFolder } from '@ftypes/api';
 import { fileSizeFormat } from '@/unit/format/fileSizeFormat';
 import { dateFormat } from '@/unit/format/dateFormat';
 import FileTypeIcon from './FileTypeIcon.vue';
@@ -8,13 +8,8 @@ import MainBox from '@/unit/smallElements/MainBox.vue';
 import ButtonLink from '@/unit/smallElements/ButtonLink.vue';
 import ArrowDownSvg from '../icons/ArrowDownSvg.vue';
 
-const children = ref<(File | Folder)[]>([
-    { type:"file", name: "example.txt", size: 1234, lastModified: Date.now() },
-    { type:"folder", name: "Documents", size: 0, lastModified: Date.now() },
-    { type:"file", name: "image.png", size: 5678, lastModified: Date.now() },
-    { type:"file", name: "video.mp4", size: 91011, lastModified: Date.now() },
-    { type:"folder", name: "Downloads", size: 0, lastModified: Date.now() },
-]);
+const props = defineProps<{ filelist: APIFileList }>()
+const children = computed<APIFileList>(() => props.filelist);
 
 //排序
 const sortType = ref<"name-asc" | "name-desc" | "size-asc" | "size-desc" | "item-asc" | "item-desc">();
@@ -129,8 +124,7 @@ watch(sortType, () => {
             </div>
             <!--      行-->
             <TransitionGroup name="list">
-                <ButtonLink class="td" v-for="file of showChildren" :key="file.name"
-                    :to="`./${encodeURI(file.name)}/`">
+                <ButtonLink class="td" v-for="file of showChildren" :key="file.name" :to="`./${encodeURI(file.name)}/`">
                     <div class="t-name">
                         <FileTypeIcon class="file-icon" :fileType="file.type" :fileName="file.name" />
                         <span class="file-name" :title="file.name">{{ file.name }}</span>
