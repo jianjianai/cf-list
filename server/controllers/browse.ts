@@ -1,7 +1,6 @@
 import { createJsonHandler, registerController } from "../service/controllerManager";
-import { APIFile, APIFileList } from "../../types/api";
-import { Folder,File } from "../service/driveManager";
-import { allToAPI, fileToAPIFile } from "../controllerTools/transforms";
+import { APIFile, APIFileList, APIFilePreviewInfo } from "../../types/api";
+import { allToAPI } from "../controllerTools/transforms";
 
 registerController({
     path: new RegExp("/view/?.*"),
@@ -15,5 +14,20 @@ registerController({
             return null;
         }
         return allToAPI(fileview);
+    }),
+});
+
+registerController({
+    path: new RegExp("/previewInfos/?.*"),
+    permission: undefined,
+    handler: createJsonHandler(async (req, { fileManager }): Promise<APIFilePreviewInfo[] | null> => {
+        const url = new URL(req.url);
+        const path = "/" + url.pathname.replace(/^\/previewInfos\/?/, "");
+        console.log("previewInfos path:", path);
+        const fileview = await fileManager.previewInfos(path);
+        if (!fileview) {
+            return null;
+        }
+        return fileview;
     }),
 });

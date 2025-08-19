@@ -8,7 +8,6 @@ import BrowesContent from '@/components/filesBrowe/BrowesContent.vue';
 import BrowesPageHeader from '@/components/filesBrowe/BrowesPageHeader.vue';
 import { serverApiBrowse } from '@/unit/serverApi/browse';
 import ButtonLink from '@/unit/smallElements/ButtonLink.vue';
-import MainBox from '@/unit/smallElements/MainBox.vue';
 import type { APIFile, APIFileList } from '@ftypes/api';
 import { computed, onMounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
@@ -32,16 +31,16 @@ const viewType = computed(() => {
 // 加载状态
 const loading = ref(true);
 // 当前viewType对应的路径
-let currentPath: string | null = null;
+const currentPath = ref<string>("");
 export type ToDirFunction = typeof toDir;
 // 取消跳转加载的函数
 let abortToDir:(()=>void) | null = null;
 async function toDir(path: string, file?: APIFileList | APIFile | null) {
   let abort = false;
-  if(currentPath == path){
+  if(currentPath.value == path){
     return;
   }
-  currentPath = path;
+  currentPath.value = path;
   if(filePath.value != path){
     router.push({ path: path });
   }
@@ -83,8 +82,8 @@ onMounted(()=>{
       <!-- 文件列表 -->
       <BriwesLoading v-if="loading"/>
       <template v-else>
-        <BriwesFolder v-if="viewType == 'folder'" :filelist="view as APIFileList" :currentPath="filePath" :toDir="toDir"></BriwesFolder>
-        <BriwesFile v-else-if="viewType == 'file'" :file="view as APIFile"></BriwesFile>
+        <BriwesFolder v-if="viewType == 'folder'" :filelist="view as APIFileList" :currentPath="currentPath" :toDir="toDir"></BriwesFolder>
+        <BriwesFile v-else-if="viewType == 'file'" :file="view as APIFile" :currentPath="currentPath"></BriwesFile>
         <BriwesNoFIle v-else-if="viewType == 'null'">文件不存在</BriwesNoFIle>
       </template>
 

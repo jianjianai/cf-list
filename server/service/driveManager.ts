@@ -1,3 +1,5 @@
+import { APIFilePreviewInfo } from "../../types/api";
+
 export interface File {
     type: "file";
     /** 文件名 */
@@ -6,10 +8,8 @@ export interface File {
     size?: number;
     /** 文件修改时间 */
     lastModified?: number;
-    /** 文件下载信息,如果无需二次请求可以得到下载信息可以加上当需要下载时就无需调用downloadInfo获取了 */
-    downloadInfo?: FileDownloadInfo;
     /** 文件预览信息,如果无需二次请求可以得到预览信息可以加上当需要预览时就无需调用previewInfo获取了 */
-    previewInfo?: FilePreviewInfo;
+    previewInfos?: FilePreviewInfo[];
 }
 export interface Folder {
     type: "folder";
@@ -21,23 +21,7 @@ export interface Folder {
     lastModified?: number;
 }
 export type FileList = (File | Folder)[];
-export type FileDownloadInfo = FileDownloadInfoDirect | FileDownloadInfoProxy;
-export type FilePreviewInfo = FileDownloadInfo;
-export interface FileDownloadInfoDirect {
-    type: "direct";
-    /** 文件下载链接 */
-    url: string;
-}
-export interface FileDownloadInfoProxy {
-    /** 代理下载将加密下载链接和请求头 */
-    type: "proxy";
-    /** 文件下载链接 */
-    url: string;
-    /** 下载所需请求头 */
-    headers?: `${string}: ${string}`[];
-}
-
-
+export type FilePreviewInfo = APIFilePreviewInfo;
 
 
 export interface Drive {
@@ -49,18 +33,11 @@ export interface Drive {
     view(path: string): Promise<FileList | File | undefined>;
 
     /** 
-     * 返回文件下载信息
-     * @param path 要查的路径
-     * @return 返回文件下载链接,如果文件不存在则返回 undefined
-     * */
-    downloadInfo(path: string): Promise<FileDownloadInfo | undefined>;
-
-    /** 
      * 返回文件预览信息
      * @param path 要查的路径
      * @return 返回文件下载链接,如果文件不存在则返回 undefined
      * */
-    previewInfo(path: string): Promise<FilePreviewInfo | undefined>;
+    previewInfos(path: string): Promise<FilePreviewInfo[] | undefined>;
 }
 export type DriveManager = ReturnType<typeof createDriveManager>;
 export function createDriveManager() {

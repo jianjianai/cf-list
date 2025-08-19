@@ -1,3 +1,5 @@
+import type { PreviewInfo } from "@/unit/filePreview";
+
 export interface APIFile {
     type: "file";
     /** 文件名 */
@@ -6,10 +8,8 @@ export interface APIFile {
     size?: number;
     /** 文件修改时间 */
     lastModified?: number;
-    /** 文件下载信息,如果没有则需要获取 */
-    downloadInfo?: APIFileDownloadInfo;
     /** 文件预览信息,如果没有则需要获取 */
-    previewInfo?: APIFilePreviewInfo;
+    previewInfos?: APIFilePreviewInfo[];
 }
 
 export interface APIFolder {
@@ -22,14 +22,6 @@ export interface APIFolder {
     lastModified?: number;
 }
 
-export type APIFileDownloadInfo = APIFileDownloadInfoURL;
-export type APIFilePreviewInfo = APIFileDownloadInfo;
+
+export type APIFilePreviewInfo = PreviewInfo;
 export type APIFileList = (APIFile | APIFolder)[];
-
-export interface APIFileDownloadInfoURL{
-    type: "url";
-    /** 文件下载链接 */
-    url: string;
-}
-
-export type previewType = "download";

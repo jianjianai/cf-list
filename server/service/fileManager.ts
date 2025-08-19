@@ -1,4 +1,4 @@
-import { DriveManager, FileDownloadInfo, FilePreviewInfo, Folder, File } from "./driveManager";
+import { DriveManager, FilePreviewInfo, Folder, File } from "./driveManager";
 
 
 export type FileManager = ReturnType<typeof createFileManager>;
@@ -33,27 +33,14 @@ export function createFileManager(driveManager: DriveManager) {
         },
 
         /** 
-         * 返回文件下载信息
-         * @param path 要查的路径
-         * @return 返回文件下载链接,如果文件不存在则返回 undefined
-         * */
-        async downloadInfo(path: string): Promise<FileDownloadInfo | undefined> {
-            const retrieveDrive = driveManager.retrieveDrive(path);
-            if (retrieveDrive) {
-                return retrieveDrive.drive.downloadInfo(retrieveDrive.drivePath);
-            }
-            return undefined;
-        },
-
-        /** 
          * 返回文件预览信息
          * @param path 要查的路径
          * @return 返回文件下载链接,如果文件不存在则返回 undefined
          * */
-        async previewInfo(path: string): Promise<FilePreviewInfo | undefined> {
+        async previewInfos(path: string): Promise<FilePreviewInfo[] | undefined> {
             const retrieveDrive = driveManager.retrieveDrive(path);
             if (retrieveDrive) {
-                return retrieveDrive.drive.previewInfo(retrieveDrive.drivePath);
+                return retrieveDrive.drive.previewInfos(retrieveDrive.drivePath);
             }
             return undefined;
         }

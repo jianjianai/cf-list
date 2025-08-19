@@ -1,23 +1,17 @@
 <script setup lang="ts">
-import './GenericDown.css';
-import type { APIFile, APIFileDownloadInfo } from "@ftypes/api.js";
+import './css/GenericDown.css';
+import type { APIFile } from "@ftypes/api.js";
 import { dateFormat } from "../format/dateFormat";
 import { fileSizeFormat } from "../format/fileSizeFormat";
-import { computed } from "vue";
 import { putNotification } from "../notification/notification";
 import FileTypeIcon from "@/components/filesBrowe/FileTypeIcon.vue";
 import AButton from "../smallElements/AButton.vue";
 
-const props = defineProps<{ file: APIFile }>()
-const fileDownloadInfo = computed<APIFileDownloadInfo>(() => {
-  return {
-    type: "url",
-    url: "test",
-  }
-})
+export type GenericDownInfo = { url: string; };
+const props = defineProps<{ file: APIFile, previewInfo: GenericDownInfo }>()
 
 function copyLink() {
-  navigator.clipboard.writeText(fileDownloadInfo.value.url);
+  navigator.clipboard.writeText(props.previewInfo.url);
   putNotification({ message: "链接已复制", type: "success" });
 }
 
@@ -33,7 +27,7 @@ function copyLink() {
     </div>
     <div class="buttons">
       <AButton class="button-color-grep1" @click="copyLink()">复制链接</AButton>
-      <AButton target="_blank" :href="fileDownloadInfo.url">下载</AButton>
+      <AButton target="_blank" :href="props.previewInfo.url">下载</AButton>
     </div>
   </div>
 </template>

@@ -1,21 +1,20 @@
+import { cGenericDownInfo } from "../controllerTools/previewInfoCreateer";
 import { registerDriveCreater } from "../service/driveCreaterManager";
-import { Drive, Folder, File, FileDownloadInfo, FilePreviewInfo, FileList } from "../service/driveManager";
+import { Drive, Folder, File, FilePreviewInfo, FileList } from "../service/driveManager";
 
 
+function toP(download_url:string): FilePreviewInfo[] {
+    return [
+        cGenericDownInfo(download_url)
+    ]
+}
 function gfToSf(gf: any): File | FileList {
     function toF({ name, size, download_url }: any): File {//文件
         return {
             type: "file",
             name: name,
             size: size,
-            downloadInfo: {
-                type: "direct",
-                url: download_url
-            },
-            previewInfo: {
-                type: "direct",
-                url: download_url
-            }
+            previewInfos: toP(download_url),
         }
     }
     function toD({ name }: any): Folder {//文件夹
@@ -46,15 +45,15 @@ export function createGithubRepositorieDrive(
     branch: string = "main",
     githubToken: string
 ): Drive {
+    const requestHandler = new Headers();
+    requestHandler.set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36 Edg/139.0.0.0");
+    requestHandler.set("Accept", "application/vnd.github+json");
+    requestHandler.set("Authorization", `Bearer ${githubToken}`);
+    requestHandler.set("X-GitHub-Api-Version", "2022-11-28");
     return {
         view: async function (path: string): Promise<FileList | File | undefined> {
-            const requestHandler = new Headers();
-            requestHandler.set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36 Edg/139.0.0.0");
-            requestHandler.set("Accept", "application/vnd.github+json");
-            requestHandler.set("Authorization", `Bearer ${githubToken}`);
-            requestHandler.set("X-GitHub-Api-Version", "2022-11-28");
             const response = await fetch(`https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/contents${path}?ref=${encodeURIComponent(branch)}`, { headers: requestHandler });
-            if(response.status === 404) {
+            if (response.status === 404) {
                 return undefined; // 如果路径不存在，返回 undefined
             }
             if (!response.ok) {
@@ -63,11 +62,22 @@ export function createGithubRepositorieDrive(
             const data = await response.json();
             return gfToSf(data);
         },
-        downloadInfo: async function (path: string): Promise<FileDownloadInfo | undefined> {
-            throw new Error("Function not implemented.");
-        },
-        previewInfo: async function (path: string): Promise<FilePreviewInfo | undefined> {
-            throw new Error("Function not implemented.");
+        previewInfos: async function (path: string): Promise<FilePreviewInfo[] | undefined> {
+            const response = await fetch(`https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/contents${path}?ref=${encodeURIComponent(branch)}`, { headers: requestHandler });
+            if (response.status === 404) {
+                return undefined; // 如果路径不存在，返回 undefined
+            }
+            if (!response.ok) {
+                throw new Error(`Failed to fetch preview info for path "${path}": ${response.statusText} | ${await response.text()}`);
+            }
+            const data = await response.json();
+            if ((data as any)?.type === "file") {
+                const download_url = (data as any).download_url;
+                if(download_url){
+                    return toP(download_url);
+                }
+            }
+            return undefined; // 如果不是文件或没有下载链接，返回 undefined
         }
     };
 }
