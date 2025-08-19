@@ -1,18 +1,24 @@
 <script setup lang="ts">
 import BriwesFile from '@/components/filesBrowe/BriwesFile.vue';
 import BriwesFolder from '@/components/filesBrowe/BriwesFolder.vue';
+import BriwesLoading from '@/components/filesBrowe/BriwesLoading.vue';
+import BriwesNoFIle from '@/components/filesBrowe/BriwesNoFIle.vue';
 import BrowesBreadcrumb from '@/components/filesBrowe/BrowesBreadcrumb.vue';
 import BrowesContent from '@/components/filesBrowe/BrowesContent.vue';
 import BrowesPageHeader from '@/components/filesBrowe/BrowesPageHeader.vue';
 import { serverApiBrowse } from '@/unit/serverApi/browse';
 import ButtonLink from '@/unit/smallElements/ButtonLink.vue';
+import MainBox from '@/unit/smallElements/MainBox.vue';
 import type { APIFile, APIFileList } from '@ftypes/api';
-import { computed, ref, watch } from 'vue';
-import { useRoute } from 'vue-router';
+import { computed, onMounted, ref, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 
+const router = useRouter();
 const route = useRoute();
-const content = ref("## 欢迎使用 CFList 文件浏览器");
 const filePath = computed(() => `/${Array.isArray(route.params.path) ? route.params.path.join("/") : ""}`);
+
+
+//------------------- 文件列表和文件预览 ------------------------
 const view = ref<APIFileList | APIFile | null>();
 const viewType = computed(() => {
   if (!view.value) {
@@ -23,13 +29,48 @@ const viewType = computed(() => {
   }
   return "file";
 });
+// 加载状态
 const loading = ref(true);
-watch(filePath, async () => {
+// 当前viewType对应的路径
+let currentPath: string | null = null;
+export type ToDirFunction = typeof toDir;
+// 取消跳转加载的函数
+let abortToDir:(()=>void) | null = null;
+async function toDir(path: string, file?: APIFileList | APIFile | null) {
+  let abort = false;
+  if(currentPath == path){
+    return;
+  }
+  currentPath = path;
+  if(filePath.value != path){
+    router.push({ path: path });
+  }
   loading.value = true;
-  view.value = await serverApiBrowse.view(filePath.value);
+  abortToDir?.();
+  let controller = new AbortController();
+  abortToDir = () => {
+    abort = true;
+    controller.abort();
+    abortToDir = null;
+  }
+  let v = file;
+  if (!v) {
+    v = await serverApiBrowse.view(path,controller);
+  }
+  if(abort){
+    return;
+  }
+  view.value = v;
   loading.value = false;
-}, { immediate: true });
+}
+watch(filePath, async () => toDir(filePath.value), { immediate: true });
 
+//------------------------ REDME预览 ------------------------
+const content = ref("## 欢迎使用 CFList 文件浏览器");
+
+onMounted(()=>{
+  console.log("文件浏览器已加载");
+})
 
 </script>
 
@@ -37,9 +78,17 @@ watch(filePath, async () => {
   <div class="page-main">
     <div class="page-layouts">
       <BrowesPageHeader></BrowesPageHeader>
-      <BrowesBreadcrumb></BrowesBreadcrumb>
-      <BriwesFolder v-if="viewType == 'folder'" :filelist="view as APIFileList"></BriwesFolder>
-      <BriwesFile v-if="viewType == 'file'" :file="view as APIFile"></BriwesFile>
+      <BrowesBreadcrumb :currentPath="filePath"></BrowesBreadcrumb>
+
+      <!-- 文件列表 -->
+      <BriwesLoading v-if="loading"/>
+      <template v-else>
+        <BriwesFolder v-if="viewType == 'folder'" :filelist="view as APIFileList" :currentPath="filePath" :toDir="toDir"></BriwesFolder>
+        <BriwesFile v-else-if="viewType == 'file'" :file="view as APIFile"></BriwesFile>
+        <BriwesNoFIle v-else-if="viewType == 'null'">文件不存在</BriwesNoFIle>
+      </template>
+
+      <!-- REDME预览 -->
       <BrowesContent v-if="content" :content="content" style="padding: 1rem"></BrowesContent>
     </div>
     <div class="footer">

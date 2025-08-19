@@ -4,7 +4,7 @@
  * */
 export function dateFormat(dateNumber: number|undefined): string {
     if(!dateNumber){
-        return '未知';
+        return '-';
     }
     const date = new Date(dateNumber);
     const year = date.getFullYear();

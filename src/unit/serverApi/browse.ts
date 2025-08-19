@@ -1,12 +1,18 @@
 import type { APIFile, APIFileList } from "@ftypes/api";
+import { authorizationFetchJson } from "./authorization";
 
 export const serverApiBrowse = {
-    async view(path: string): Promise<APIFile | APIFileList | null> {
-        const response = await fetch(`/view/${encodeURI(path)}`);
-        if (!response.ok) {
-            throw new Error(`Failed to fetch view for path "${path}": ${response.statusText}`);
+    async view(path: string, abort?: AbortController): Promise<APIFile | APIFileList | null> {
+        try {
+            return await authorizationFetchJson<APIFile | APIFileList | null>(`/view${path}`, {
+                method: "GET",
+                signal: abort?.signal
+            });
+        } catch (error) {
+            if ((error as any)?.name !== "AbortError") {
+                throw error;
+            }
+            return null;
         }
-        const data = await response.json();
-        return data as APIFile | APIFileList | null;
     }
 }

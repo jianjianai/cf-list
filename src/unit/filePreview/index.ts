@@ -1,7 +1,7 @@
 import { type Component, defineAsyncComponent } from "vue";
 import type { APIFile, previewType } from "@ftypes/api";
-// import LoadError from "./LoadError.vue";
-// import Loading from "./Loading.vue";
+import LoadError from "./LoadError.vue";
+import Loading from "./Loading.vue";
 
 
 export type ViewComponent = {
@@ -9,14 +9,12 @@ export type ViewComponent = {
     name: string,
 };
 
-/**
- * @param downloadCorsAllow 下载跨域最恶劣的工作等级
- */
+
 function defineViewComponent(name: string, f: () => Promise<Component>): ViewComponent {
     return {
         component: defineAsyncComponent({
-            // errorComponent: LoadError,
-            // loadingComponent: Loading,
+            errorComponent: LoadError,
+            loadingComponent: Loading,
             loader: f
         }),
         name: name,

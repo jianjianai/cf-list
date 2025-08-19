@@ -1,13 +1,11 @@
 <script setup lang="ts">
 import ButtonLink from "@/unit/smallElements/ButtonLink.vue";
 import {computed} from "vue";
-import { useRoute } from "vue-router";
 
-const router = useRoute();
+const props = defineProps<{ currentPath: string }>();
+
 const pathArray = computed(()=>{
-  const s = router.path.split("/");
-  s.splice(0,1);
-  s.splice(s.length-1, 1);
+  const s = props.currentPath.split("/").filter(Boolean);
   return s;
 });
 
@@ -27,7 +25,7 @@ function getToPath(index: number) {
   <ButtonLink to="/">主页</ButtonLink>
   <template v-for="(file,index) of pathArray">
     <div>/</div>
-    <ButtonLink class="alink" :to="getToPath(index)">{{decodeURI(file)}}</ButtonLink>
+    <ButtonLink class="alink" :to="getToPath(index)">{{file}}</ButtonLink>
   </template>
 </div>
 </template>

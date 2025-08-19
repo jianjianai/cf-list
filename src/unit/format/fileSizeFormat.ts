@@ -4,7 +4,7 @@
  * */
 export function fileSizeFormat(size: number|undefined): string {
   if(!size){
-    return '未知';
+    return '-';
   }
   if (size < 1024) {
     return size + 'B';

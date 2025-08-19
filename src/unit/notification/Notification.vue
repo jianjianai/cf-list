@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import CloseSvg from "@/components/icons/CloseSvg.vue";
-import {closeNotification, iconComponents, notifications} from "./notification.js";
+import {cancelNotificationTimeout, closeNotification, iconComponents, notifications, setNotificationTimeout} from "./notification.js";
 import "./notification.css";
 
 </script>
 <template>
   <TransitionGroup class="notification-list" name="list" tag="div">
-    <div v-for="({notification}, key) in notifications" :key="key" class="notification">
+    <div v-for="({notification}, key) in notifications" :key="key" class="notification" 
+    @mouseover="cancelNotificationTimeout(key)" @mouseleave="setNotificationTimeout(key)">
       <div class="icon">
         <component :is="iconComponents[notification.type]" class="icon-svg" :class="notification.type"></component>
       </div>
@@ -69,7 +70,12 @@ import "./notification.css";
   width: 28rem;
   margin: 0.5rem;
   max-width: calc(100vw - 2.6rem);
+  transition: transform 0.25s;
 }
+.notification:hover{
+  transform: scale(1.01) translateY(-0.1rem) translateX(-0.1rem);
+}
+
 .notification-list{
   height: 0;
   position: fixed;

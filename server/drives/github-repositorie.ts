@@ -2,29 +2,66 @@ import { registerDriveCreater } from "../service/driveCreaterManager";
 import { Drive, Folder, File, FileDownloadInfo, FilePreviewInfo, FileList } from "../service/driveManager";
 
 
+function gfToSf(gf: any): File | FileList {
+    function toF({ name, size, download_url }: any): File {//文件
+        return {
+            type: "file",
+            name: name,
+            size: size,
+            downloadInfo: {
+                type: "direct",
+                url: download_url
+            },
+            previewInfo: {
+                type: "direct",
+                url: download_url
+            }
+        }
+    }
+    function toD({ name }: any): Folder {//文件夹
+        return {
+            type: "folder",
+            name: name,
+        };
+    }
+    if (Array.isArray(gf)) {
+        return gf.map(item => {
+            if (item.type === "file") {
+                return toF(item);
+            } else if (item.type === "dir") {
+                return toD(item);
+            } else {
+                throw new Error("Unknown item type in GitHub response");
+            }
+        });
+    } else if (gf.type === "file") {
+        return toF(gf);
+    }
+    throw new Error("Unknown GitHub response format");
+}
+
 export function createGithubRepositorieDrive(
     owner: string,
     repo: string,
-    branch: string = "main"
+    branch: string = "main",
+    githubToken: string
 ): Drive {
     return {
         view: async function (path: string): Promise<FileList | File | undefined> {
-            // TODO: 实现 GitHub 仓库的文件浏览逻辑
-            // return [
-            //     {
-            //         type: "folder",
-            //         name: "example-folder",
-            //     },
-            //     {
-            //         type: "file",
-            //         name: "example-file.txt",
-            //     }
-            // ];
-            return {
-                type: 'file',
-                name: 'example-file.txt',
+            const requestHandler = new Headers();
+            requestHandler.set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36 Edg/139.0.0.0");
+            requestHandler.set("Accept", "application/vnd.github+json");
+            requestHandler.set("Authorization", `Bearer ${githubToken}`);
+            requestHandler.set("X-GitHub-Api-Version", "2022-11-28");
+            const response = await fetch(`https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/contents${path}?ref=${encodeURIComponent(branch)}`, { headers: requestHandler });
+            if(response.status === 404) {
+                return undefined; // 如果路径不存在，返回 undefined
             }
-            return undefined;
+            if (!response.ok) {
+                throw new Error(`Failed to fetch view for path "${path}": ${response.statusText} | ${await response.text()}`);
+            }
+            const data = await response.json();
+            return gfToSf(data);
         },
         downloadInfo: async function (path: string): Promise<FileDownloadInfo | undefined> {
             throw new Error("Function not implemented.");
@@ -58,5 +95,11 @@ registerDriveCreater({
             description: "分支名称",
             defaultValue: "main",
         },
+        {
+            name: "githubToken",
+            type: "string",
+            description: "GitHub 访问令牌",
+            required: true,
+        }
     ],
 });

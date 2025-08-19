@@ -5,11 +5,23 @@ import { fileSizeFormat } from '@/unit/format/fileSizeFormat';
 import { dateFormat } from '@/unit/format/dateFormat';
 import FileTypeIcon from './FileTypeIcon.vue';
 import MainBox from '@/unit/smallElements/MainBox.vue';
-import ButtonLink from '@/unit/smallElements/ButtonLink.vue';
 import ArrowDownSvg from '../icons/ArrowDownSvg.vue';
+import type { ToDirFunction } from '@/views/FilesBrowesView.vue';
+import ButtonLink from '@/unit/smallElements/ButtonLink.vue';
 
-const props = defineProps<{ filelist: APIFileList }>()
+
+const props = defineProps<{ filelist: APIFileList, currentPath: string ,toDir:ToDirFunction}>()
 const children = computed<APIFileList>(() => props.filelist);
+function goto(f: APIFile | APIFolder) {
+    const newpath = `${props.currentPath == '/' ? '' : props.currentPath}/${f.name}`;
+    console.log("跳转到", newpath);
+    if (f.type === 'folder') {
+        props.toDir(newpath);
+    } else if (f.type === 'file') {
+        props.toDir(newpath, f);
+    }
+}
+
 
 //排序
 const sortType = ref<"name-asc" | "name-desc" | "size-asc" | "size-desc" | "item-asc" | "item-desc">();
@@ -124,7 +136,7 @@ watch(sortType, () => {
             </div>
             <!--      行-->
             <TransitionGroup name="list">
-                <ButtonLink class="td" v-for="file of showChildren" :key="file.name" :to="`./${encodeURI(file.name)}/`">
+                <ButtonLink class="td" v-for="file of showChildren" :key="file.name" @click="goto(file)">
                     <div class="t-name">
                         <FileTypeIcon class="file-icon" :fileType="file.type" :fileName="file.name" />
                         <span class="file-name" :title="file.name">{{ file.name }}</span>
