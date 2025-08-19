@@ -6,7 +6,7 @@ import { computed, ref, shallowRef, watch } from "vue";
 import BriwesLoading from "./BriwesLoading.vue";
 import { serverApiBrowse } from "@/unit/serverApi/browse";
 
-const props = defineProps<{ file: APIFile ,currentPath:string }>()
+const props = defineProps<{ file: APIFile, currentPath: string }>()
 
 const viewComponents = shallowRef<{ viewComponent: ViewComponent<unknown>, info: unknown }[]>()
 watch(() => props.file, async () => {
@@ -46,15 +46,70 @@ const selectedComponent = computed(() => {
 
 <template>
     <BriwesLoading v-if="!viewComponents"></BriwesLoading>
-    <MainBox v-else>
-        <div>
-            <select v-model="selectEd" v-if="viewComponents.length > 1">
-                <option v-for="(co, index) of viewComponents" :value="index">{{ co.viewComponent.lable }}</option>
-            </select>
+    <MainBox class="main-box box" v-else>
+        <div class="upline" v-if="viewComponents.length > 1">
+            <div class="item" :class="{selected:selectEd==index}" v-for="(co, index) of viewComponents" :value="index" @click="selectEd = index">{{
+                co.viewComponent.lable }}</div>
+        </div>
+        <div class="file-preview">
             <component :is="selectedComponent!.viewComponent.component" :file="props.file"
                 :previewInfo="selectedComponent!.info"></component>
         </div>
     </MainBox>
 </template>
 
-<style scoped></style>
+<style scoped>
+.file-preview {
+    padding: 0 0.8rem 0.8rem 0.8rem;
+}
+
+.main-box.box {
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+}
+
+.upline {
+    background-color: var(--upline-color);
+    width: 100%;
+    height: 2.8rem;
+    display: flex;
+    border-radius: 0.8rem 0.8rem 0 0;
+    flex-wrap: nowrap;
+    align-items: flex-end;
+}
+
+.item {
+    padding: 0 0.8rem;
+    cursor: pointer;
+    font-size: 0.9rem;
+    height: 2.8rem;
+    text-align: center;
+    line-height: 2.8rem;
+    border-radius: 0.5rem 0.5rem 0 0;
+    position: relative;
+}
+
+.item.selected {
+    background-color: var(--mian-box-bgc);
+}
+.item.selected::after{
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: -0.5rem;
+    width: 0.5rem;
+    height: 0.5rem;
+    background: radial-gradient(1rem at left top, transparent 50%, var(--mian-box-bgc) 50%);
+}
+.item.selected::before{
+    content: '';
+    position: absolute;
+    bottom: 0;
+    right: -0.5rem;
+    width: 0.5rem;
+    height: 0.5rem;
+    background: radial-gradient(1rem at right top, transparent 50%, var(--mian-box-bgc) 50%);
+}
+
+</style>

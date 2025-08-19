@@ -233,6 +233,7 @@ watch(sortType, () => {
 .td .t-size,
 .td .t-up-item {
     font-size: 0.9rem;
+    color: var(--f-color-1);
 }
 
 .td {

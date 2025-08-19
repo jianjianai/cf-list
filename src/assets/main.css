@@ -25,7 +25,7 @@
     /*如果需要hover可点击提示颜色*/
     --main-hover-bg: rgba(132, 133, 141, 0.18);
     /*如果需要框的颜色*/
-    --main-border-c: #e1e4e8;
+    --main-border-c: #d8d8d8;
 
     /**提示功能颜色*/
     --tip-color-error: #ca1414;
@@ -38,4 +38,10 @@
 :root {
     --file-icon-c: var(--t-color-1);
     --folder-icon-c: var(--t-color-1);
+}
+
+/**---------------BriwesFile.vue--------------------*/
+:root {
+    --upline-color: #e4e7eb;
+    --upline-item-color: #f0f2f4;
 }

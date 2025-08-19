@@ -15,5 +15,6 @@ import './MainBox.css'
   border-radius: 0.8rem;
   padding: 0.8rem;
   box-shadow: var(--mian-box-shadow);
+  border: 0.05rem solid var(--mian-box-border);
 }
 </style>
