@@ -1,0 +1,4 @@
+/**---------------PDFPlayer.vue--------------------*/
+:root{
+    --pdf-player-border: 0.1rem solid var(--main-border-c);
+}

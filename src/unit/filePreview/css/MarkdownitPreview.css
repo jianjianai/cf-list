@@ -1,0 +1,5 @@
+/**---------------MarkdownPlayer.vue--------------------*/
+:root{
+    --markdown-player-border: 0.1rem solid var(--main-border-c);
+    --markdown-player-title-bgc: #f0f2f4;
+}

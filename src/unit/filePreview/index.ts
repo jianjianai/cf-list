@@ -2,7 +2,8 @@ import { type Component, defineAsyncComponent } from "vue";
 import type { APIFile } from "@ftypes/api";
 import LoadError from "../smallElements/LoadError.vue";
 import Loading from "../smallElements/Loading.vue";
-import type { GenericDownInfo } from "./GenericDown.vue";
+import type { MarkdownitPreviewInfo } from "./preview/MarkdownitPreview.vue";
+import type { PreTextPreviewPreviewInfo } from "./preview/PreTextPreview.vue";
 
 
 export type ViewComponent<T> = {
@@ -21,12 +22,31 @@ function defineViewComponent<T>(name: string, f: () => Promise<Component<{ file:
         lable: name,
     }
 }
-export type PIB<T extends keyof typeof previewComponents,P> = {type: T,previewInfo: P};
+export type PIB<T extends keyof typeof previewComponents, P> = { type: T, previewInfo: P };
+export type URLPreviewInfo = { url: string };
+export type URLPIB<T extends keyof typeof previewComponents> = PIB<T, URLPreviewInfo>;
 
+export type PreviewInfo =
+    URLPIB<"GenericDown"> |
+    URLPIB<"MarkdownitURLPreview"> |
+    PIB<"MarkdownitPreview", MarkdownitPreviewInfo>|
+    URLPIB<"APlayerMusicPreview"> |
+    URLPIB<"ArtplayerVideoPreview">|
+    URLPIB<"ImgPreview">|
+    PIB<"PreTextPreview", PreTextPreviewPreviewInfo>|
+    URLPIB<"PreTextURLPreview">|
+    URLPIB<"PdfVue3PDFPreview">;
 
-export type PreviewInfo = PIB<"GenericDown", GenericDownInfo>;
 export const previewComponents = {
-    "GenericDown": defineViewComponent("文件下载", () => import("./GenericDown.vue")),
+    "GenericDown": defineViewComponent("文件下载", () => import("./urlPreview/GenericDown.vue")),
+    "MarkdownitURLPreview": defineViewComponent("Markdownit Markdown 预览", () => import("./urlPreview/MarkdownitURLPreview.vue")),
+    "MarkdownitPreview": defineViewComponent("Markdownit Markdown 预览", () => import("./preview/MarkdownitPreview.vue")),
+    "APlayerMusicPreview": defineViewComponent("APlayer音乐预览", () => import("./urlPreview/APlayerMusicPreview.vue")),
+    "ArtplayerVideoPreview": defineViewComponent("Artplayer视频预览", () => import("./urlPreview/ArtplayerVideoPreview.vue")),
+    "ImgPreview": defineViewComponent("图片预览", () => import("./urlPreview/ImgPreview.vue")),
+    "PreTextPreview": defineViewComponent("纯文本预览", () => import("./preview/PreTextPreview.vue")),
+    "PreTextURLPreview": defineViewComponent("纯文本预览", () => import("./urlPreview/PreTextURLPreview.vue")),
+    "PdfVue3PDFPreview": defineViewComponent("PDF预览", () => import("./urlPreview/PdfVue3PDFPreview.vue")),
 }
 
 

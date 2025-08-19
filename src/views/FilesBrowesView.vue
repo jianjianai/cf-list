@@ -4,7 +4,6 @@ import BriwesFolder from '@/components/filesBrowe/BriwesFolder.vue';
 import BriwesLoading from '@/components/filesBrowe/BriwesLoading.vue';
 import BriwesNoFIle from '@/components/filesBrowe/BriwesNoFIle.vue';
 import BrowesBreadcrumb from '@/components/filesBrowe/BrowesBreadcrumb.vue';
-import BrowesContent from '@/components/filesBrowe/BrowesContent.vue';
 import BrowesPageHeader from '@/components/filesBrowe/BrowesPageHeader.vue';
 import { serverApiBrowse } from '@/unit/serverApi/browse';
 import ButtonLink from '@/unit/smallElements/ButtonLink.vue';
@@ -34,14 +33,14 @@ const loading = ref(true);
 const currentPath = ref<string>("");
 export type ToDirFunction = typeof toDir;
 // 取消跳转加载的函数
-let abortToDir:(()=>void) | null = null;
+let abortToDir: (() => void) | null = null;
 async function toDir(path: string, file?: APIFileList | APIFile | null) {
   let abort = false;
-  if(currentPath.value == path){
+  if (currentPath.value == path) {
     return;
   }
   currentPath.value = path;
-  if(filePath.value != path){
+  if (filePath.value != path) {
     router.push({ path: path });
   }
   loading.value = true;
@@ -54,9 +53,9 @@ async function toDir(path: string, file?: APIFileList | APIFile | null) {
   }
   let v = file;
   if (!v) {
-    v = await serverApiBrowse.view(path,controller);
+    v = await serverApiBrowse.view(path, controller);
   }
-  if(abort){
+  if (abort) {
     return;
   }
   view.value = v;
@@ -65,9 +64,21 @@ async function toDir(path: string, file?: APIFileList | APIFile | null) {
 watch(filePath, async () => toDir(filePath.value), { immediate: true });
 
 //------------------------ REDME预览 ------------------------
-const content = ref("## 欢迎使用 CFList 文件浏览器");
+const contentFilePath = computed(() => {
+  if (viewType.value === "folder") {
+    return `${currentPath.value == "/" ? "" : currentPath.value}/README.md`;
+  }
+  return null;
+});
+const contentFile = computed(() => {
+  if (viewType.value === "folder") {
+    let list = view.value as APIFileList;
+    return list.find(f => f.type == "file" && f.name.toUpperCase() === "README.MD");
+  }
+  return null;
+});
 
-onMounted(()=>{
+onMounted(() => {
   console.log("文件浏览器已加载");
 })
 
@@ -80,15 +91,16 @@ onMounted(()=>{
       <BrowesBreadcrumb :currentPath="filePath"></BrowesBreadcrumb>
 
       <!-- 文件列表 -->
-      <BriwesLoading v-if="loading"/>
+      <BriwesLoading v-if="loading" />
       <template v-else>
-        <BriwesFolder v-if="viewType == 'folder'" :filelist="view as APIFileList" :currentPath="currentPath" :toDir="toDir"></BriwesFolder>
+        <BriwesFolder v-if="viewType == 'folder'" :filelist="view as APIFileList" :currentPath="currentPath"
+          :toDir="toDir"></BriwesFolder>
         <BriwesFile v-else-if="viewType == 'file'" :file="view as APIFile" :currentPath="currentPath"></BriwesFile>
         <BriwesNoFIle v-else-if="viewType == 'null'">文件不存在</BriwesNoFIle>
       </template>
 
       <!-- REDME预览 -->
-      <BrowesContent v-if="content" :content="content" style="padding: 1rem"></BrowesContent>
+      <BriwesFile v-if="contentFile" :file="contentFile as APIFile" :currentPath="contentFilePath!"></BriwesFile>
     </div>
     <div class="footer">
       <ButtonLink to="https://github.com/jianjianai/FList">由 CFList 强力驱动</ButtonLink>

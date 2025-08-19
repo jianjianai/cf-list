@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import './css/GenericDown.css';
+import '../css/GenericDown.css';
 import type { APIFile } from "@ftypes/api.js";
-import { dateFormat } from "../format/dateFormat";
-import { fileSizeFormat } from "../format/fileSizeFormat";
-import { putNotification } from "../notification/notification";
+import { dateFormat } from "../../format/dateFormat";
+import { fileSizeFormat } from "../../format/fileSizeFormat";
+import { putNotification } from "../../notification/notification";
 import FileTypeIcon from "@/components/filesBrowe/FileTypeIcon.vue";
-import AButton from "../smallElements/AButton.vue";
+import AButton from "../../smallElements/AButton.vue";
+import type { URLPreviewInfo } from '..';
 
-export type GenericDownInfo = { url: string; };
-const props = defineProps<{ file: APIFile, previewInfo: GenericDownInfo }>()
+const props = defineProps<{ file: APIFile, previewInfo: URLPreviewInfo }>()
 
 function copyLink() {
   navigator.clipboard.writeText(props.previewInfo.url);
