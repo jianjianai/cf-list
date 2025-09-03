@@ -1,4 +1,4 @@
-import { FilePreviewInfo } from "../service/driveManager";
+import { FilePreviewInfo } from "../../service/driveManager";
 import { cAPlayerMusicPreviewInfo, cArtplayerVideoPreviewInfo, cGenericDownInfo, cImgPreviewInfo, cMarkdownitURLPreviewInfo, cPdfVue3PDFPreviewInfo, cPreTextURLPreviewInfo } from "./previewInfoCreateer";
 
 type CreateFilePreviewInfoByUrl = (url: string) => FilePreviewInfo;

@@ -1,13 +1,10 @@
-import { createPreviewsBySuffix } from "../controllerTools/createPreviewsBysuffix";
-import { registerDriveCreater } from "../service/driveCreaterManager";
+import { createPreviewsBySuffix } from "../controllers/controllerTools/createPreviewsBysuffix";
+import { registerDriveCreater } from "../driveCreater";
 import { Drive, Folder, File, FilePreviewInfo, FileList } from "../service/driveManager";
 
 
-function toP(name:string,download_url:string,isPreview:boolean): FilePreviewInfo[] | undefined {
-    if(!isPreview && name.toUpperCase().endsWith(".MD")) {
-        return undefined; // 如果不是预览请求且是MD文件，则不返回预览信息
-    }
-    return createPreviewsBySuffix(name,download_url);
+function toP(name: string, download_url: string): FilePreviewInfo[] | undefined {
+    return createPreviewsBySuffix(name, download_url);
 }
 function gfToSf(gf: any): File | FileList {
     function toF({ name, size, download_url }: any): File {//文件
@@ -15,7 +12,7 @@ function gfToSf(gf: any): File | FileList {
             type: "file",
             name: name,
             size: size,
-            previewInfos: toP(name,download_url,false),
+            previewInfos: toP(name, download_url),
         }
     }
     function toD({ name }: any): Folder {//文件夹
@@ -74,8 +71,8 @@ export function createGithubRepositorieDrive(
             const data = await response.json();
             if ((data as any)?.type === "file") {
                 const download_url = (data as any).download_url;
-                if(download_url){
-                    return toP((data as any).name,download_url,true);
+                if (download_url) {
+                    return toP((data as any).name, download_url);
                 }
             }
             return undefined; // 如果不是文件或没有下载链接，返回 undefined

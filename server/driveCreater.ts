@@ -1,4 +1,4 @@
-import { Drive } from "./driveManager";
+import { Drive } from "./service/driveManager";
 
 
 export interface DriveCreater {

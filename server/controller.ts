@@ -1,4 +1,6 @@
-import { Server } from "../server";
+import { Server } from "./server";
+import { Permission } from "./service/userManager";
+
 
 export type RequestHandler = (req: Request, server: Server) => Promise<Response> | Response;
 export interface Controller {
@@ -7,7 +9,7 @@ export interface Controller {
     /** 处理函数 */
     handler: RequestHandler;
     /** 权限 */
-    permission?: string[];
+    permission?: Permission[];
 }
 
 const controllers: Controller[] = [];

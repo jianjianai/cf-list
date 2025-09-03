@@ -1,10 +1,10 @@
-import { createJsonHandler, registerController } from "../service/controllerManager";
 import { APIFile, APIFileList, APIFilePreviewInfo } from "../../types/api";
-import { allToAPI } from "../controllerTools/transforms";
+import { registerController, createJsonHandler } from "../controller";
+import { allToAPI } from "./controllerTools/transforms";
 
 registerController({
     path: new RegExp("/view/?.*"),
-    permission: undefined,
+    permission: ["read"],
     handler: createJsonHandler(async (req, { fileManager }): Promise<APIFile | APIFileList | null> => {
         const url = new URL(req.url);
         const path = "/" + url.pathname.replace(/^\/view\/?/, "");
@@ -19,7 +19,7 @@ registerController({
 
 registerController({
     path: new RegExp("/previewInfos/?.*"),
-    permission: undefined,
+    permission: ["read"],
     handler: createJsonHandler(async (req, { fileManager }): Promise<APIFilePreviewInfo[] | null> => {
         const url = new URL(req.url);
         const path = "/" + url.pathname.replace(/^\/previewInfos\/?/, "");

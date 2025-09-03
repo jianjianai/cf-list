@@ -1,5 +1,5 @@
-import type { PreviewInfo } from "@/unit/filePreview";
-
+// ------------ 文件相关 -----------
+import type { PreviewInfo } from "../src/unit/filePreview";
 export interface APIFile {
     type: "file";
     /** 文件名 */
@@ -25,3 +25,12 @@ export interface APIFolder {
 
 export type APIFilePreviewInfo = PreviewInfo;
 export type APIFileList = (APIFile | APIFolder)[];
+
+
+// --------------- 用户相关 -----------------
+import type { Permission } from "../server/service/userManager";
+export type Authorization = {
+    userName: string;
+    token: string;
+    permissions: Permission[];
+}

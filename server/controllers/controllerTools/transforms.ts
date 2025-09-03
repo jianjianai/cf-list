@@ -1,5 +1,5 @@
-import { APIFile, APIFolder, APIFileList } from "../../types/api";
-import { Folder, File, FileList } from "../service/driveManager";
+import { APIFile, APIFolder, APIFileList } from "../../../types/api";
+import { Folder, File, FileList } from "../../service/driveManager";
 
 export function folderToAPIFolder(folder: Folder): APIFolder {
     return {

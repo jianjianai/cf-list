@@ -1,17 +1,26 @@
-import { createDriveManager, Drive, DriveManager } from "./service/driveManager";
+import { ConfigPersistenceer } from "./configPersistenceer";
+import { createAuthorizationManager } from "./service/authorizationManager";
+import { createConfigManager } from "./service/configManager";
+import { createDriveManager } from "./service/driveManager";
+import { createEventManager } from "./service/eventManager";
 import { createFileManager } from "./service/fileManager";
+import { createUserManager } from "./service/userManager";
 
 
-export type Server = ReturnType<typeof createServer>;
-export function createServer(rootDrive:Drive){
-    const driveManager: DriveManager = createDriveManager();
-    driveManager.mount("/", rootDrive);
-    // TODO 加载配置文件
-
+export type Server = Awaited<ReturnType<typeof createServer>>;
+export async function createServer(configPersistenceer: ConfigPersistenceer) {
+    const eventManager = createEventManager();
+    const configManager = await createConfigManager(configPersistenceer, eventManager);
+    const driveManager = createDriveManager(configManager);
     const fileManager = createFileManager(driveManager);
+    const userManager = await createUserManager(configManager);
+    const authorizationManager = createAuthorizationManager(configManager,userManager);
     return {
-        rootDrive,
         driveManager,
         fileManager,
+        configManager,
+        eventManager,
+        userManager,
+        authorizationManager
     }
 }

@@ -1,42 +1,77 @@
 import { createServer, Server } from "./server";
-import { executeController } from "./service/controllerManager";
 import './controllers/index';
 import './drives/index';
-import { getDriveCreater } from "./service/driveCreaterManager";
+import './configPersistenceer/index';
+import { executeController } from "./controller";
+import { getConfigPersistenceer } from "./configPersistenceer";
 
 let server: Server;
 
 export default {
-	fetch(request, env, ctx) {
+	async fetch(request, env, ctx) {
 		if (!server) {
-			const rootDriveName: string = (env as any).ROOT_DRIVE_NAME;
-			const rootDriveArgs: string = (env as any).ROOT_DRIVE_ARGS;
-			if (!rootDriveName) {
-				return new Response("ROOT_DRIVE_NAME is not set in environment variables", { status: 500 });
+			if (!(env as any).CCP) {
+				return new Response("CCP environment variable not configured", { status: 500 });
 			}
-			if (!rootDriveArgs) {
-				return new Response("ROOT_DRIVE_ARGS is not set in environment variables", { status: 500 });
-			}
-			const driveCreater = getDriveCreater(rootDriveName);
-			if (!driveCreater) {
-				return new Response(`Drive creator for "${rootDriveName}" not found`, { status: 500 });
-			}
-			let args: any[];
+			let ccp;
 			try {
-				args = JSON.parse(rootDriveArgs);
+				ccp = JSON.parse((env as any).CCP);
 			} catch (e) {
-				return new Response(`Failed to parse ROOT_DRIVE_ARGS: ${e}`, { status: 500 });
+				return new Response("Failed to parse CCP environment variable", { status: 500 });
 			}
-			if (!Array.isArray(args)) {
-				return new Response("ROOT_DRIVE_ARGS must be an array", { status: 500 });
+			const configPersistenceerName = ccp.name;
+			const configPersistenceerArgs = ccp.args;
+			if (!configPersistenceerName) {
+				return new Response("CCP name not configured", { status: 500 });
+			}
+			if (!configPersistenceerArgs) {
+				return new Response("CCP args not configured", { status: 500 });
+			}
+			if (!Array.isArray(configPersistenceerArgs)) {
+				return new Response("CCP args must be an array", { status: 500 });
 			}
 			try {
-				const rootDrive = driveCreater.create(...args);
-				server = createServer(rootDrive);
+				const configPersistenceer = getConfigPersistenceer(configPersistenceerName);
+				if (!configPersistenceer) {
+					return new Response(`Failed to create root drive: ${configPersistenceerName} not found`, { status: 500 });
+				}
+				server = await createServer(await configPersistenceer(...configPersistenceerArgs));
 			} catch (e) {
-				return new Response(`Failed to create root drive: ${e}`, { status: 500 });
+				return new Response(`Failed to start server: ${e}`, { status: 500 });
 			}
 		}
-		return executeController(request, [], server);
+		let requestc: Request = request;
+		try {
+			await server.eventManager.triggerBeforeControllerCallbacks({ request: requestc, setRequest: (req) => { requestc = req } });
+		} catch (e) {
+			return new Response(`Failed to execute before events: ${e}`, { status: 500 });
+		}
+		let permissions: string[] = [];
+		try {
+			const token = requestc.headers.get("Authorization");
+			if (token) {
+				const user = await server.authorizationManager.verifyUserAuthorization(token);
+				if (!user) {
+					return new Response("Unauthorized", { status: 401 });
+				}
+				permissions = user.permissions;
+			} else {
+				permissions = server.userManager.getVisitorPermissions();
+			}
+		} catch (e) {
+			return new Response(`Failed to get user permissions: ${e}`, { status: 500 });
+		}
+		let response;
+		try {
+			response = await executeController(requestc, permissions, server);
+		} catch (e) {
+			return new Response(`Failed to execute controller: ${e}`, { status: 500 });
+		}
+		try {
+			await server.eventManager.triggerControllerAfterEvents({ response, setResponse: (res) => { response = res } });
+		} catch (e) {
+			return new Response(`Failed to execute after events: ${e}`, { status: 500 });
+		}
+		return response;
 	},
 } satisfies ExportedHandler<Env>;

@@ -1,4 +1,4 @@
-import { FilePreviewInfo } from "../service/driveManager";
+import { FilePreviewInfo } from "../../service/driveManager";
 
 /**
  * 创建一个通用的下载链接预览信息
