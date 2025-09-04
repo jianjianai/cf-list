@@ -1,5 +1,5 @@
 import { generatePasswordHash, generateRandomString } from "../controllers/controllerTools/encryptions";
-import { ConfigManager } from "./configManager";
+import type { ConfigManager } from "./configManager";
 
 // 权限类型定义
 export type Permission = keyof typeof permissionDef;

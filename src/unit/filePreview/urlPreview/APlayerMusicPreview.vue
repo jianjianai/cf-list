@@ -5,10 +5,10 @@ import { putNotification } from '@/unit/notification/notification';
 import type { APIFile } from '@ftypes/api.js';
 import { ref, onMounted, onUnmounted } from 'vue';
 import type { URLPreviewInfo } from '..';
-import 'APlayer/dist/APlayer.min.css';
+import 'aplayer/dist/APlayer.min.css';
 import coverUrl from "@/unit/fileTypesSvg/file-music-fill.svg?url";
 // @ts-ignore
-import APlayer from 'APlayer';
+import APlayer from 'aplayer';
 
 
 const props = defineProps<{ file: APIFile, previewInfo: URLPreviewInfo }>()

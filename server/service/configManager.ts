@@ -1,5 +1,5 @@
-import { ConfigPersistenceer } from "../configPersistenceer";
-import { EventManager } from "./eventManager";
+import type { ConfigPersistenceer } from "../configPersistenceer";
+import type { EventManager } from "./eventManager";
 
 export type Config = {
     [key: string]: any;
