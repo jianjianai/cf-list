@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { APIFile } from "@ftypes/api";
-import type { URLPreviewInfo } from "..";
+import type { URLPreviewInfo } from "@ftypes/preview";
 
 
 const props = defineProps<{ file: APIFile, previewInfo: URLPreviewInfo }>()

@@ -7,6 +7,7 @@ import BrowesBreadcrumb from '@/components/filesBrowe/BrowesBreadcrumb.vue';
 import BrowesPageHeader from '@/components/filesBrowe/BrowesPageHeader.vue';
 import { serverApiBrowse } from '@/unit/serverApi/browse';
 import ButtonLink from '@/unit/smallElements/ButtonLink.vue';
+import { isReadmeFile } from '@/unit/utils/fileUtils';
 import type { APIFile, APIFileList } from '@ftypes/api';
 import { computed, onMounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
@@ -73,7 +74,7 @@ const contentFilePath = computed(() => {
 const contentFile = computed(() => {
   if (viewType.value === "folder") {
     let list = view.value as APIFileList;
-    return list.find(f => f.type == "file" && f.name.toUpperCase() === "README.MD");
+    return list.find((f: APIFile | { type: string; name: string }) => f.type == "file" && isReadmeFile(f.name));
   }
   return null;
 });

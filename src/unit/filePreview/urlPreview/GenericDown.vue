@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import '../css/GenericDown.css';
-import type { APIFile } from "@ftypes/api.js";
+import type { APIFile } from "@ftypes/api";
 import { dateFormat } from "../../format/dateFormat";
 import { fileSizeFormat } from "../../format/fileSizeFormat";
 import { putNotification } from "../../notification/notification";
 import FileTypeIcon from "@/components/filesBrowe/FileTypeIcon.vue";
 import AButton from "../../smallElements/AButton.vue";
-import type { URLPreviewInfo } from '..';
+import type { URLPreviewInfo } from '@ftypes/preview';
 
 const props = defineProps<{ file: APIFile, previewInfo: URLPreviewInfo }>()
 

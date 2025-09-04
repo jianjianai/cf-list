@@ -2,7 +2,7 @@
 import '@/assets/github-markdown.css'
 import type { APIFile } from '@ftypes/api';
 import MarkdownitPreview from '../preview/MarkdownitPreview.vue';
-import type { URLPreviewInfo } from '..';
+import type { URLPreviewInfo } from '@ftypes/preview';
 import Loading from '@/unit/smallElements/Loading.vue';
 import { ref, watch } from 'vue';
 import { putNotification } from '@/unit/notification/notification';

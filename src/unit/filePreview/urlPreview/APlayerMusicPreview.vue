@@ -2,9 +2,9 @@
 import { dateFormat } from '@/unit/format/dateFormat';
 import { fileSizeFormat } from '@/unit/format/fileSizeFormat';
 import { putNotification } from '@/unit/notification/notification';
-import type { APIFile } from '@ftypes/api.js';
+import type { APIFile } from '@ftypes/api';
 import { ref, onMounted, onUnmounted } from 'vue';
-import type { URLPreviewInfo } from '..';
+import type { URLPreviewInfo } from '@ftypes/preview';
 import 'aplayer/dist/APlayer.min.css';
 import coverUrl from "@/unit/fileTypesSvg/file-music-fill.svg?url";
 // @ts-ignore

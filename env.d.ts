@@ -5,8 +5,8 @@ declare module '@ftypes/api' {
   export * from '../types/api';
 }
 
-declare module '@ftypes/api.js' {
-  export * from '../types/api';
+declare module '@ftypes/preview' {
+  export * from '../types/preview';
 }
 
 declare global {

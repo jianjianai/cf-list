@@ -24,7 +24,7 @@ watch(() => props.file, async () => {
     }
     const f: { viewComponent: ViewComponent<unknown>, info: unknown }[] = [];
     for (const info of previewInfos) {
-        const v = previewComponents[info.type];
+        const v = previewComponents[info.type as keyof typeof previewComponents];
         if (!v) {
             continue;
         }

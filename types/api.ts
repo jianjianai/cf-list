@@ -1,5 +1,5 @@
 // ------------ 文件相关 -----------
-import type { PreviewInfo } from "../src/unit/filePreview";
+import type { PreviewInfo } from "./preview";
 export interface APIFile {
     type: "file";
     /** 文件名 */

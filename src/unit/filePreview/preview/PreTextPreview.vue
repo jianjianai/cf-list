@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import '../css/PreTextPreview.css';
 import type { APIFile } from '@ftypes/api';
+import type { PreTextPreviewPreviewInfo } from '@ftypes/preview';
 
-export type PreTextPreviewPreviewInfo = { content: string; };
 const props = defineProps<{ file: APIFile, previewInfo: PreTextPreviewPreviewInfo }>()
 </script>
 

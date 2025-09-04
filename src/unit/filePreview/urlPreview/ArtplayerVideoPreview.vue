@@ -3,7 +3,7 @@ import { putNotification } from "@/unit/notification/notification";
 import type { APIFile } from "@ftypes/api";
 import Artplayer from "artplayer";
 import { onMounted, onUnmounted } from "vue";
-import type { URLPreviewInfo } from "..";
+import type { URLPreviewInfo } from "@ftypes/preview";
 
 
 const props = defineProps<{ file: APIFile, previewInfo: URLPreviewInfo }>()

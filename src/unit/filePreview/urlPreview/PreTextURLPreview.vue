@@ -2,7 +2,7 @@
 import { putNotification } from '@/unit/notification/notification';
 import type { APIFile } from '@ftypes/api';
 import { ref, onMounted } from 'vue';
-import type { URLPreviewInfo } from '..';
+import type { URLPreviewInfo } from '@ftypes/preview';
 import LoadError from '@/unit/smallElements/LoadError.vue';
 import Loading from '@/unit/smallElements/Loading.vue';
 import PreTextPreview from '../preview/PreTextPreview.vue';
