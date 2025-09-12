@@ -10,7 +10,8 @@ export interface ConfigCase<T> {
     set(value: T | undefined): void;
 }
 export async function createConfigManager(configPersistenceer: ConfigPersistenceer, eventManager: EventManager) {
-    let config: Config = await configPersistenceer.get() || {};
+    let loadPromise: Promise<void> | null = null;
+    let config: Config;
     let updated = false;
     /** 获取配置 */
     function getConfig(key: string) {
@@ -21,26 +22,37 @@ export async function createConfigManager(configPersistenceer: ConfigPersistence
         config[key] = value;
         updated = true;
     }
-    /** 检查配置是否更新 */
-    function isUpdated() {
-        return updated;
-    }
+
     /** 更新配置，使持久化 */
     async function update() {
-        if (updated) {
-            await configPersistenceer.set(config);
+        if (loadPromise) { try { await loadPromise; } catch (e) { } }
+        loadPromise = (async () => {
+            if (updated) {
+                await configPersistenceer.set(config);
+                config = await configPersistenceer.get() || {};
+                updated = false;
+            }
+            loadPromise = null;
+        })();
+        await loadPromise;
+    }
+    /** 加载配置，覆盖当前配置 */
+    async function loadConfig() {
+        if (loadPromise) { try { await loadPromise; } catch (e) { } }
+        loadPromise = (async () => {
+            config = await configPersistenceer.get() || {};
             updated = false;
-        }
+        })();
+        await loadPromise;
     }
 
+    await loadConfig();
     // 请求完成时触发，持久化配置
-    eventManager.registerControllerExecuteAfterEvent(async (event) => { await update(); });
+    eventManager.registerControllerExecuteAfterEvent(async (event) => { await update() });
     return {
         case: <T>(key: string): ConfigCase<T> => ({
             get: () => getConfig(key) as T | undefined,
             set: (value: T | undefined) => setConfig(key, value)
-        }),
-        isUpdated,
-        update
+        })
     };
 }

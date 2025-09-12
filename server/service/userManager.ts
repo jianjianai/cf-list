@@ -7,58 +7,56 @@ export const permissionDef = {
     read: { label: "读取", description: "允许读取文件和目录" },
 };
 
-interface UserManagerConfig {
-    /** 用于密码hash加盐 */
-    passwordSalt: string;
-    /** 访客默认权限 */
-    visitorPermissions: Permission[];
-    // 用户列表
-    users: ConfigUser[];
-}
+type UserManagerConfig = ConfigUser[];
 type ConfigUser = {
     userName: string; // 用户名
     passwordHash: string; // 密码
+    passwordSalt: string;
     permissions: Permission[]; // 权限列表
 }
 
 export async function createDefaultUserManagerConfig(): Promise<UserManagerConfig> {
-    const salt = generateRandomString(16);
-    return {
-        passwordSalt: salt,
-        visitorPermissions: ["read"], // 访客默认权限
-        users: [
-            {
-                userName: "root",
-                passwordHash: await generatePasswordHash("root", salt), // 需要在创建时设置密码
-                permissions: Object.keys(permissionDef) as Permission[], // root用户拥有所有权限
-            }
-        ]
-    }
+    const saltvisitor = generateRandomString(16);
+    const saltroot = generateRandomString(16);
+    return [
+        {
+            userName: "visitor",
+            passwordHash: await generatePasswordHash("root", saltvisitor), // 需要在创建时设置密码
+            passwordSalt: saltvisitor,
+            permissions: ["read"], // visitor用户只能读权限
+        },
+        {
+            userName: "root",
+            passwordHash: await generatePasswordHash("root", saltroot), // 需要在创建时设置密码
+            passwordSalt: saltroot,
+            permissions: Object.keys(permissionDef) as Permission[], // root用户拥有所有权限
+        }
+    ]
 }
 
-export type User = {userName: string;permissions: Permission[];};
+export type User = { userName: string; permissions: Permission[]; };
 export type UserManager = Awaited<ReturnType<typeof createUserManager>>;
-export async function createUserManager(configManager:ConfigManager) {
+export async function createUserManager(configManager: ConfigManager) {
     const configCase = configManager.case<UserManagerConfig>("users");
     let userloading: UserManagerConfig | undefined = configCase.get();
-    if(!userloading){
+    if (!userloading) {
         userloading = await createDefaultUserManagerConfig();
         configCase.set(userloading);
     }
     const config: UserManagerConfig = userloading;
 
     /** 获取所有用户信息 */
-    function getAllUsers():User[] {
-        return config.users.map(user => ({
+    function getAllUsers(): User[] {
+        return config.map(user => ({
             userName: user.userName,
             permissions: user.permissions
         }));
     }
     /** 验证用户密码 */
     async function verifyUserPassword(userName: string, password: string): Promise<User | null> {
-        const user = config.users.find(u => u.userName === userName);
+        const user = config.find(u => u.userName === userName);
         if (!user) return null;
-        const hash = await generatePasswordHash(password, config.passwordSalt);
+        const hash = await generatePasswordHash(password, user.passwordSalt);
         if (hash === user.passwordHash) {
             return { userName: user.userName, permissions: user.permissions };
         }
@@ -66,7 +64,7 @@ export async function createUserManager(configManager:ConfigManager) {
     }
 
     function getUser(userName: string): User | null {
-        const user = config.users.find(u => u.userName === userName);
+        const user = config.find(u => u.userName === userName);
         if (!user) return null;
         return { userName: user.userName, permissions: user.permissions };
     }
@@ -77,8 +75,7 @@ export async function createUserManager(configManager:ConfigManager) {
         },
         verifyUserPassword,
         getAllUsers,
-        getPasswordSalt: () => config.passwordSalt,
         getUser,
-        getVisitorPermissions: () => config.visitorPermissions
+        getVisitorUser: () => getUser("visitor")
     }
 }

@@ -145,6 +145,16 @@ export function createDriveManager(configManager: ConfigManager) {
     }
     reloadConfigToDriveTree();
 
+    /**
+     * @param newConfig 新的驱动配置
+     * 添加新的驱动配置并加载
+     */
+    function addConfigAndLoad(newConfig: { path: string, name: string, args: any[] }) {
+        config.push(newConfig);
+        reloadConfigToDriveTree();
+        configCase.set(config);
+    }
+
     return {
         mount,
         retrieveDrive,
@@ -153,10 +163,6 @@ export function createDriveManager(configManager: ConfigManager) {
         getConfig() {
             return config;
         },
-        setConfigAndLoad(newConfig: { path: string, name: string, args: any[] }[]) {
-            config = newConfig;
-            reloadConfigToDriveTree();
-            configCase.set(newConfig);
-        }
+        addConfigAndLoad
     }
 }

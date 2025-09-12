@@ -1,2 +1,2 @@
-import './browse'
+import './readFile'
 import './user'
