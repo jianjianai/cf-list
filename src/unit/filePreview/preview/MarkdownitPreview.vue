@@ -10,5 +10,12 @@ const props = defineProps<{ file: APIFile, previewInfo: MarkdownitPreviewInfo }>
 
 </script>
 <template>
-    <div class="markdown-body" v-html="markdown.render(props.previewInfo.content)"></div>
+    <div class="markdownit-preview">
+        <div class="markdown-body" v-html="markdown.render(props.previewInfo.content)"></div>
+    </div>
 </template>
+<style scoped>
+.markdownit-preview {
+  padding: 0.5rem 0;
+}
+</style>
