@@ -6,6 +6,7 @@ import { FilePreviewInfo } from "../../service/driveManager";
  * **/
 export function cGenericDownInfo(url: string): FilePreviewInfo {
     return {
+        lable: "文件下载",
         type: "GenericDown",
         previewInfo: {
             url: url,
@@ -18,6 +19,7 @@ export function cGenericDownInfo(url: string): FilePreviewInfo {
  * **/
 export function cMarkdownitURLPreviewInfo(url: string): FilePreviewInfo {
     return {
+        lable: "Markdownit Markdown 预览",
         type: "MarkdownitURLPreview",
         previewInfo: {
             url: url,
@@ -30,6 +32,7 @@ export function cMarkdownitURLPreviewInfo(url: string): FilePreviewInfo {
  * **/
 export function cMarkdownitPreviewInfo(content: string): FilePreviewInfo {
     return {
+        lable: "Markdownit Markdown 预览",
         type: "MarkdownitPreview",
         previewInfo: {
             content: content,
@@ -43,6 +46,7 @@ export function cMarkdownitPreviewInfo(content: string): FilePreviewInfo {
  * **/
 export function cAPlayerMusicPreviewInfo(url: string): FilePreviewInfo {
     return {
+        lable: "APlayer 音乐预览",
         type: "APlayerMusicPreview",
         previewInfo: {
             url: url,
@@ -55,6 +59,7 @@ export function cAPlayerMusicPreviewInfo(url: string): FilePreviewInfo {
  * **/
 export function cArtplayerVideoPreviewInfo(url: string): FilePreviewInfo {
     return {
+        lable: "Artplayer 视频预览",
         type: "ArtplayerVideoPreview",
         previewInfo: {
             url: url,
@@ -67,6 +72,7 @@ export function cArtplayerVideoPreviewInfo(url: string): FilePreviewInfo {
  * **/
 export function cImgPreviewInfo(url: string): FilePreviewInfo {
     return {
+        lable: "图片预览",
         type: "ImgPreview",
         previewInfo: {
             url: url,
@@ -79,6 +85,7 @@ export function cImgPreviewInfo(url: string): FilePreviewInfo {
  * **/
 export function cPreTextPreviewInfo(content: string): FilePreviewInfo {
     return {
+        lable: "纯文本预览",
         type: "PreTextPreview",
         previewInfo: {
             content: content,
@@ -91,6 +98,7 @@ export function cPreTextPreviewInfo(content: string): FilePreviewInfo {
  * **/
 export function cPreTextURLPreviewInfo(url: string): FilePreviewInfo {
     return {
+        lable: "纯文本预览",
         type: "PreTextURLPreview",
         previewInfo: {
             url: url,
@@ -103,6 +111,7 @@ export function cPreTextURLPreviewInfo(url: string): FilePreviewInfo {
  * **/
 export function cPdfVue3PDFPreviewInfo(url: string): FilePreviewInfo {
     return {
+        lable: "PDF 预览",
         type: "PdfVue3PDFPreview",
         previewInfo: {
             url: url,

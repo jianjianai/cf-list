@@ -8,7 +8,7 @@ import { serverApiBrowse } from "@/unit/serverApi/readFile";
 
 const props = defineProps<{ file: APIFile, currentPath: string }>()
 
-const viewComponents = shallowRef<{ viewComponent: ViewComponent<unknown>, info: unknown }[]>()
+const viewComponents = shallowRef<{ viewComponent: ViewComponent<unknown>, info: unknown, lable: string }[]>()
 watch(() => props.file, async () => {
     viewComponents.value = undefined;
     if (props.file.type !== "file") {
@@ -22,13 +22,13 @@ watch(() => props.file, async () => {
         console.warn("没有预览信息", props.file);
         return;// TODO 显示没有预览的提示
     }
-    const f: { viewComponent: ViewComponent<unknown>, info: unknown }[] = [];
+    const f: { viewComponent: ViewComponent<unknown>, info: unknown, lable: string }[] = [];
     for (const info of previewInfos) {
         const v = previewComponents[info.type];
         if (!v) {
             continue;
         }
-        f.push({ viewComponent: v, info: info.previewInfo });
+        f.push({ viewComponent: v, info: info.previewInfo, lable: info.lable });// TODO 显示预览类型
     }
     viewComponents.value = f;
 }, { immediate: true });
@@ -47,13 +47,13 @@ const selectedComponent = computed(() => {
 <template>
     <BriwesLoading v-if="!viewComponents"></BriwesLoading>
     <MainBox class="main-box box" v-else>
-        <div class="upline" v-if="viewComponents.length > 1">
-            <div class="item" :class="{selected:selectEd==index}" v-for="(co, index) of viewComponents" :value="index" @click="selectEd = index">{{
-                co.viewComponent.lable }}</div>
+        <div class="upline">
+            <div class="item" :class="{ selected: selectEd == index }" v-for="(co, index) of viewComponents"
+                :value="index" @click="selectEd = index">{{ co.lable }}</div>
         </div>
         <div class="file-preview">
-            <component :is="selectedComponent!.viewComponent.component" :file="props.file"
-                :previewInfo="selectedComponent!.info"></component>
+            <component :is="selectedComponent!.viewComponent" :file="props.file" :previewInfo="selectedComponent!.info">
+            </component>
         </div>
     </MainBox>
 </template>
@@ -93,7 +93,8 @@ const selectedComponent = computed(() => {
 .item.selected {
     background-color: var(--mian-box-bgc);
 }
-.item.selected::after{
+
+.item.selected::after {
     content: '';
     position: absolute;
     bottom: 0;
@@ -102,7 +103,8 @@ const selectedComponent = computed(() => {
     height: 0.5rem;
     background: radial-gradient(1rem at left top, transparent 50%, var(--mian-box-bgc) 50%);
 }
-.item.selected::before{
+
+.item.selected::before {
     content: '';
     position: absolute;
     bottom: 0;
@@ -111,5 +113,4 @@ const selectedComponent = computed(() => {
     height: 0.5rem;
     background: radial-gradient(1rem at right top, transparent 50%, var(--mian-box-bgc) 50%);
 }
-
 </style>

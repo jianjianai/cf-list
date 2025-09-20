@@ -6,47 +6,41 @@ import type { MarkdownitPreviewInfo } from "./preview/MarkdownitPreview.vue";
 import type { PreTextPreviewPreviewInfo } from "./preview/PreTextPreview.vue";
 
 
-export type ViewComponent<T> = {
-    component: Component<{ file: APIFile, previewInfo: T }>,
-    lable: string,
-};
+export type ViewComponent<T> = Component<{ file: APIFile, previewInfo: T }>;
 
 
-function defineViewComponent<T>(name: string, f: () => Promise<Component<{ file: APIFile, previewInfo: T }>>): ViewComponent<T> {
-    return {
-        component: defineAsyncComponent({
-            errorComponent: LoadError,
-            loadingComponent: Loading,
-            loader: f
-        }),
-        lable: name,
-    }
+function defineViewComponent<T>(f: () => Promise<Component<{ file: APIFile, previewInfo: T }>>): ViewComponent<T> {
+    return defineAsyncComponent({
+        errorComponent: LoadError,
+        loadingComponent: Loading,
+        loader: f
+    })
 }
-export type PIB<T extends keyof typeof previewComponents, P> = { type: T, previewInfo: P };
+export type PIB<T extends keyof typeof previewComponents, P> = { type: T, previewInfo: P, lable: string };
 export type URLPreviewInfo = { url: string };
 export type URLPIB<T extends keyof typeof previewComponents> = PIB<T, URLPreviewInfo>;
 
 export type PreviewInfo =
     URLPIB<"GenericDown"> |
     URLPIB<"MarkdownitURLPreview"> |
-    PIB<"MarkdownitPreview", MarkdownitPreviewInfo>|
+    PIB<"MarkdownitPreview", MarkdownitPreviewInfo> |
     URLPIB<"APlayerMusicPreview"> |
-    URLPIB<"ArtplayerVideoPreview">|
-    URLPIB<"ImgPreview">|
-    PIB<"PreTextPreview", PreTextPreviewPreviewInfo>|
-    URLPIB<"PreTextURLPreview">|
+    URLPIB<"ArtplayerVideoPreview"> |
+    URLPIB<"ImgPreview"> |
+    PIB<"PreTextPreview", PreTextPreviewPreviewInfo> |
+    URLPIB<"PreTextURLPreview"> |
     URLPIB<"PdfVue3PDFPreview">;
 
 export const previewComponents = {
-    "GenericDown": defineViewComponent("文件下载", () => import("./urlPreview/GenericDown.vue")),
-    "MarkdownitURLPreview": defineViewComponent("Markdownit Markdown 预览", () => import("./urlPreview/MarkdownitURLPreview.vue")),
-    "MarkdownitPreview": defineViewComponent("Markdownit Markdown 预览", () => import("./preview/MarkdownitPreview.vue")),
-    "APlayerMusicPreview": defineViewComponent("APlayer音乐预览", () => import("./urlPreview/APlayerMusicPreview.vue")),
-    "ArtplayerVideoPreview": defineViewComponent("Artplayer视频预览", () => import("./urlPreview/ArtplayerVideoPreview.vue")),
-    "ImgPreview": defineViewComponent("图片预览", () => import("./urlPreview/ImgPreview.vue")),
-    "PreTextPreview": defineViewComponent("纯文本预览", () => import("./preview/PreTextPreview.vue")),
-    "PreTextURLPreview": defineViewComponent("纯文本预览", () => import("./urlPreview/PreTextURLPreview.vue")),
-    "PdfVue3PDFPreview": defineViewComponent("PDF预览", () => import("./urlPreview/PdfVue3PDFPreview.vue")),
+    "GenericDown": defineViewComponent(() => import("./urlPreview/GenericDown.vue")),
+    "MarkdownitURLPreview": defineViewComponent(() => import("./urlPreview/MarkdownitURLPreview.vue")),
+    "MarkdownitPreview": defineViewComponent(() => import("./preview/MarkdownitPreview.vue")),
+    "APlayerMusicPreview": defineViewComponent(() => import("./urlPreview/APlayerMusicPreview.vue")),
+    "ArtplayerVideoPreview": defineViewComponent(() => import("./urlPreview/ArtplayerVideoPreview.vue")),
+    "ImgPreview": defineViewComponent(() => import("./urlPreview/ImgPreview.vue")),
+    "PreTextPreview": defineViewComponent(() => import("./preview/PreTextPreview.vue")),
+    "PreTextURLPreview": defineViewComponent(() => import("./urlPreview/PreTextURLPreview.vue")),
+    "PdfVue3PDFPreview": defineViewComponent(() => import("./urlPreview/PdfVue3PDFPreview.vue")),
 }
 
 
