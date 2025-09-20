@@ -18,7 +18,7 @@ function goto(f: APIFile | APIFolder) {
     if (f.type === 'folder') {
         props.toDir(newpath);
     } else if (f.type === 'file') {
-        props.toDir(newpath, f);
+        props.toDir(newpath, { list: null, infoFile: { path: newpath, file: f } });
     }
 }
 

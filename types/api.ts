@@ -26,6 +26,11 @@ export interface APIFolder {
 export type APIFilePreviewInfo = PreviewInfo;
 export type APIFileList = (APIFile | APIFolder)[];
 
+export type APIView = {
+    list: APIFileList | null;
+    infoFile: { path: string, file: APIFile } | null;
+}
+
 
 // --------------- 用户相关 -----------------
 import type { Permission } from "../server/service/userManager";

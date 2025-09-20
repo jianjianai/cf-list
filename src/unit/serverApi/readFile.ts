@@ -1,10 +1,10 @@
-import type { APIFile, APIFileList, APIFilePreviewInfo } from "@ftypes/api";
+import type { APIFile, APIFileList, APIFilePreviewInfo, APIView } from "@ftypes/api";
 import { authorizationFetchJson } from "./authorization";
 
 export const serverApiBrowse = {
-    async view(path: string, abort?: AbortController): Promise<APIFile | APIFileList | null> {
+    async view(path: string, abort?: AbortController): Promise<APIView> {
         try {
-            return await authorizationFetchJson<APIFile | APIFileList | null>(`/view${path}`, {
+            return await authorizationFetchJson<APIView>(`/view${path}`, {
                 method: "GET",
                 signal: abort?.signal
             });
@@ -12,7 +12,7 @@ export const serverApiBrowse = {
             if ((error as any)?.name !== "AbortError") {
                 throw error;
             }
-            return null;
+            return { list: null, infoFile: null };
         }
     },
     async previewInfos(path: string, abort?: AbortController): Promise<APIFilePreviewInfo[] | null> {

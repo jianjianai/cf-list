@@ -4,7 +4,7 @@ import MainBox from "@/unit/smallElements/MainBox.vue";
 import type { APIFile } from "@ftypes/api";
 import { computed, ref, shallowRef, watch } from "vue";
 import BriwesLoading from "./BriwesLoading.vue";
-import { serverApiBrowse } from "@/unit/serverApi/browse";
+import { serverApiBrowse } from "@/unit/serverApi/readFile";
 
 const props = defineProps<{ file: APIFile, currentPath: string }>()
 

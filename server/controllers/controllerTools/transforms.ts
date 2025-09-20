@@ -1,4 +1,4 @@
-import { APIFile, APIFolder, APIFileList } from "../../../types/api";
+import { APIFile, APIFolder, APIFileList, APIView } from "../../../types/api";
 import { Folder, File, FileList } from "../../service/driveManager";
 
 export function folderToAPIFolder(folder: Folder): APIFolder {
@@ -32,10 +32,12 @@ export function fileListToAPIFileList(fileList: FileList): APIFileList {
     });
 }
 
-export function allToAPI(t: FileList | File): APIFile | APIFileList {
+export function allToAPI(t: FileList | File, path: string): APIView {
     if (Array.isArray(t)) {
-        return fileListToAPIFileList(t);
+        const aPIFileList = fileListToAPIFileList(t);
+        const infoFile = aPIFileList.find(item => item.type === "file" && item.name && item.name.toUpperCase() === "README.MD") as APIFile | undefined;
+        return { list: aPIFileList, infoFile: infoFile ? { path: path + "/README.MD", file: infoFile } : null };
     } else {
-        return fileToAPIFile(t);
+        return { list: null, infoFile: { file: fileToAPIFile(t), path: path } };
     }
 }
